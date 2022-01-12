@@ -1,13 +1,9 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import PropTypes from "prop-types";
 import qualityService from "../services/qaulity.service";
 
 const QualitiesContex = React.createContext();
-
-export const useQualities = () => {
-    return useContext(QualitiesContex);
-};
 
 export const QualitiesProvider = ({ children }) => {
     const [qualities, setQualities] = useState([]);
