@@ -3,10 +3,16 @@ import qualityService from "../services/qaulity.service";
 
 const qualitiesSlice = createSlice({
     name: "qualities",
-    initialState: { entities: null, isloading: true, error: null },
+    initialState: {
+        entities: null,
+        isloading: true,
+        error: null,
+        lastFetch: null
+    },
     reducers: {
         qualitiesReceved: (state, action) => {
             state.entities = action.payload;
+            state.lastFetch = Date.now();
             state.isloading = false;
         },
         qualitiesRequested: (state) => {
@@ -23,14 +29,24 @@ const { reducer: qualitiesReducer, actions } = qualitiesSlice;
 const { qualitiesRequested, qualitiesRequestedFailed, qualitiesReceved } =
     actions;
 
-export const loadQualitiesList = () => async (dispatch) => {
-    dispatch(qualitiesRequested());
+function isOutdated(date) {
+    if (Date.now() - date > 10 * 60 * 100) {
+        return true;
+    }
+    return false;
+}
 
-    try {
-        const { content } = await qualityService.fetchAll();
-        dispatch(qualitiesReceved(content));
-    } catch (error) {
-        dispatch(qualitiesRequestedFailed(error.message));
+export const loadQualitiesList = () => async (dispatch, getState) => {
+    const { lastFetch } = getState().qualities;
+    if (isOutdated(lastFetch)) {
+        dispatch(qualitiesRequested());
+
+        try {
+            const { content } = await qualityService.fetchAll();
+            dispatch(qualitiesReceved(content));
+        } catch (error) {
+            dispatch(qualitiesRequestedFailed(error.message));
+        }
     }
 };
 
