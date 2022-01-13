@@ -54,9 +54,9 @@ const { reducer: professionsReducer, actions } = professionsSlice;
 const { professionsRequested, professionsRequestedFailed, professionsReceved } =
     actions;
 
-export const getProfessionByIDs = (professionId) => (state) => {
+export const getProfessionByIDs = (id) => (state) => {
     if (state.professions.entities) {
-        return state.professions.entities.find((p) => p._id === professionId);
+        return state.professions.entities.find((p) => p._id === id);
     }
 };
 
