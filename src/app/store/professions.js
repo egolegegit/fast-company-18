@@ -55,7 +55,9 @@ const { professionsRequested, professionsRequestedFailed, professionsReceved } =
     actions;
 
 export const getProfessionByIDs = (professionId) => (state) => {
-    return state.entities.find((p) => p._id === professionId);
+    if (state.professions.entities) {
+        return state.professions.entities.find((p) => p._id === professionId);
+    }
 };
 
 export default professionsReducer;
