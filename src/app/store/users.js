@@ -3,6 +3,7 @@ import authService from "../services/auth.service";
 import localStorageService from "../services/localStorage.service";
 import userService from "../services/user.service";
 import getRandomInt from "../utils/getRandomInt";
+import history from "../utils/history";
 
 const usersSlice = createSlice({
     name: "users",
@@ -79,6 +80,7 @@ const createUser = (payload) => async (dispatch) => {
         dispatch(userCreated(content));
     } catch (error) {
         dispatch(createUserFailed(error.message));
+        history.push("/users");
     }
 };
 
