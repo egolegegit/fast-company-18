@@ -90,7 +90,6 @@ export const logIn =
         dispatch(authRequested());
         try {
             const data = await authService.login({ email, password });
-            console.log(data);
             dispatch(authRequestSuccess({ userId: data.localId }));
             localStorageService.setTokens(data);
             history.push(redirect);

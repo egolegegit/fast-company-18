@@ -58,7 +58,6 @@ const AuthProvider = ({ children }) => {
     function logOut() {
         localStorageService.removeAuthData();
         setUser(null);
-        console.log("push");
         history.push("/");
     }
     function randomInt(min, max) {
