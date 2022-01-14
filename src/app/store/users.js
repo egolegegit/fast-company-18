@@ -50,9 +50,6 @@ const {
 } = actions;
 
 export const loadUsersList = () => async (dispatch, getState) => {
-    const { lastFetch } = getState().users;
-    console.log(lastFetch);
-
     dispatch(usersRequested());
 
     try {
@@ -69,6 +66,8 @@ export const getUserById = (userId) => (state) => {
     }
 };
 
+export const getUsersList = () => (state) => state.users.entities;
+
 const authRequested = createAction("users/requested");
 const userCreateRequested = createAction("users/userCreateRequested");
 const createUserFailed = createAction("users/userCreateFailed");
@@ -83,6 +82,22 @@ const createUser = (payload) => async (dispatch) => {
         history.push("/users");
     }
 };
+
+export const logIn =
+    ({ payload, redirect }) =>
+    async (dispatch) => {
+        const { email, password } = payload;
+        dispatch(authRequested());
+        try {
+            const data = await authService.login({ email, password });
+            console.log(data);
+            dispatch(authRequestSuccess({ userId: data.localId }));
+            localStorageService.setTokens(data);
+            history.push(redirect);
+        } catch (error) {
+            dispatch(authRequestFailed(error.message));
+        }
+    };
 
 export const signUp =
     ({ email, password, ...rest }) =>
@@ -111,5 +126,4 @@ export const signUp =
         }
     };
 
-export const getUsersList = () => (state) => state.users.entities;
 export default usersReducer;
