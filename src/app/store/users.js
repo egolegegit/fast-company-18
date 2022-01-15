@@ -5,25 +5,35 @@ import userService from "../services/user.service";
 import getRandomInt from "../utils/getRandomInt";
 import history from "../utils/history";
 
+const initialState = localStorageService.getAccessToken()
+    ? {
+          entities: null,
+          isLoading: true,
+          error: null,
+          auth: { userId: localStorageService.getUserId() },
+          isLoggedIn: true,
+          dataLoaded: false
+      }
+    : {
+          entities: null,
+          isLoading: false,
+          error: null,
+          auth: null,
+          isLoggedIn: false,
+          dataLoaded: false
+      };
+
 const usersSlice = createSlice({
     name: "users",
-    initialState: {
-        entities: null,
-        isloading: true,
-        error: null,
-        auth: null,
-        isLoggedIn: false,
-        dataLoaded: false
-    },
+    initialState,
     reducers: {
+        usersRequested: (state) => {
+            state.isLoading = true;
+        },
         usersReceved: (state, action) => {
             state.entities = action.payload;
             state.dataLoaded = true;
-            state.lastFetch = Date.now();
-            state.isloading = false;
-        },
-        usersRequested: (state) => {
-            state.isLoading = true;
+            state.isLoading = false;
         },
         usersRequestedFailed(state, action) {
             state.error = action.payload;
@@ -52,39 +62,9 @@ const {
     userCreated
 } = actions;
 
-export const loadUsersList = () => async (dispatch, getState) => {
-    dispatch(usersRequested());
-
-    try {
-        const { content } = await userService.get();
-        dispatch(usersReceved(content));
-    } catch (error) {
-        dispatch(usersRequestedFailed(error.message));
-    }
-};
-
-export const getUserById = (userId) => (state) => {
-    if (state.users.entities) {
-        return state.users.entities.find((item) => item._id === userId);
-    }
-};
-
-export const getUsersList = () => (state) => state.users.entities;
-
 const authRequested = createAction("users/requested");
 const userCreateRequested = createAction("users/userCreateRequested");
 const createUserFailed = createAction("users/userCreateFailed");
-
-const createUser = (payload) => async (dispatch) => {
-    dispatch(userCreateRequested());
-    try {
-        const { content } = await userService.create(payload);
-        dispatch(userCreated(content));
-    } catch (error) {
-        dispatch(createUserFailed(error.message));
-        history.push("/users");
-    }
-};
 
 export const logIn =
     ({ payload, redirect }) =>
@@ -128,8 +108,38 @@ export const signUp =
         }
     };
 
+const createUser = (payload) => async (dispatch) => {
+    dispatch(userCreateRequested());
+    try {
+        const { content } = await userService.create(payload);
+        dispatch(userCreated(content));
+    } catch (error) {
+        dispatch(createUserFailed(error.message));
+        history.push("/users");
+    }
+};
+export const loadUsersList = () => async (dispatch, getState) => {
+    dispatch(usersRequested());
+
+    try {
+        const { content } = await userService.get();
+        dispatch(usersReceved(content));
+    } catch (error) {
+        dispatch(usersRequestedFailed(error.message));
+    }
+};
+
+export const getUserById = (userId) => (state) => {
+    if (state.users.entities) {
+        return state.users.entities.find((item) => item._id === userId);
+    }
+};
+
+export const getUsersList = () => (state) => state.users.entities;
+
 export const getIsLoggedIn = () => (state) => state.users.isLoggedIn;
 export const getDataStatus = () => (state) => state.users.dataLoaded;
+export const getUsersLoadingStatus = () => (state) => state.users.isLoading;
 export const getCurrentUserId = () => (state) => state.users.auth.userId;
 
 export default usersReducer;
