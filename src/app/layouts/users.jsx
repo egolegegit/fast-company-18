@@ -5,7 +5,6 @@ import EditUserPage from "../components/page/editUserPage";
 import UserPage from "../components/page/userPage";
 import UsersListPage from "../components/page/usersListPage";
 import UsersLoader from "../components/ui/hoc/usersLoader";
-import UserProvider from "../hooks/useUsers";
 import { getCurrentUserId } from "../store/users";
 
 const Users = () => {
@@ -16,21 +15,19 @@ const Users = () => {
     return (
         <>
             <UsersLoader>
-                <UserProvider>
-                    {userId ? (
-                        edit ? (
-                            userId === currentUserid ? (
-                                <EditUserPage />
-                            ) : (
-                                <Redirect to={`/users/${currentUserid}/edit`} />
-                            )
+                {userId ? (
+                    edit ? (
+                        userId === currentUserid ? (
+                            <EditUserPage />
                         ) : (
-                            <UserPage userId={userId} />
+                            <Redirect to={`/users/${currentUserid}/edit`} />
                         )
                     ) : (
-                        <UsersListPage />
-                    )}
-                </UserProvider>
+                        <UserPage userId={userId} />
+                    )
+                ) : (
+                    <UsersListPage />
+                )}
             </UsersLoader>
         </>
     );
