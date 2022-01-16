@@ -20,8 +20,8 @@ const Comments = () => {
     }, [userId]);
 
     const isLoading = useSelector(getCommentsLoadingStatus());
-
     const comments = useSelector(getComments());
+
     const handleSubmit = (data) => {
         dispatch(createComment({ data, pageId: userId }));
     };
