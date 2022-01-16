@@ -56,7 +56,8 @@ export const loadCommentsList = (userId) => async (dispatch) => {
 export const createComment = (payload) => async (dispatch, getState) => {
     dispatch(addCommentRequested());
     const comment = {
-        content: payload.data.content,
+        ...payload,
+        // content: payload.data.content,
         _id: nanoid(),
         created_at: Date.now(),
         userId: getCurrentUserId()(getState())
