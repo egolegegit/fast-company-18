@@ -16,6 +16,7 @@ const LoginForm = () => {
     const history = useHistory();
     const dispatch = useDispatch();
     const [errors, setErrors] = useState({});
+
     const handleChange = (target) => {
         setData((prevState) => ({
             ...prevState,
@@ -35,14 +36,17 @@ const LoginForm = () => {
             }
         }
     };
+
     useEffect(() => {
         validate();
     }, [data]);
+
     const validate = () => {
         const errors = validator(data, validatorConfog);
         setErrors(errors);
         return Object.keys(errors).length === 0;
     };
+
     const isValid = Object.keys(errors).length === 0;
 
     const handleSubmit = (e) => {
@@ -52,10 +56,11 @@ const LoginForm = () => {
 
         const redirect = history.location.state
             ? history.location.state.from.pathname
-            : "/";
+            : "/users";
 
         dispatch(logIn({ payload: data, redirect }));
     };
+
     return (
         <form onSubmit={handleSubmit}>
             <TextField

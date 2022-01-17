@@ -51,6 +51,7 @@ const EditUserPage = () => {
             })
         );
     };
+
     function getQualitiesListByIds(qualitiesIds) {
         const qualitiesArray = [];
         for (const qualId of qualitiesIds) {
@@ -63,6 +64,7 @@ const EditUserPage = () => {
         }
         return qualitiesArray;
     }
+
     const transformData = (data) => {
         const result = getQualitiesListByIds(data).map((qual) => ({
             label: qual.name,
@@ -71,6 +73,7 @@ const EditUserPage = () => {
 
         return result;
     };
+
     useEffect(() => {
         if (professionLoading && qualitiesLoading && currentUser && !data) {
             setData({
@@ -79,13 +82,19 @@ const EditUserPage = () => {
             });
         }
     }, [professionLoading, qualitiesLoading, currentUser, data]);
+
     useEffect(() => {
         if (data && isLoading) {
             setIsLoading(false);
         }
     }, [data]);
 
-    const validatorConfog = {
+    const validatorConfig = {
+        name: {
+            isRequired: {
+                message: "Введите ваше имя"
+            }
+        },
         email: {
             isRequired: {
                 message: "Электронная почта обязательна для заполнения"
@@ -94,26 +103,40 @@ const EditUserPage = () => {
                 message: "Email введен некорректно"
             }
         },
-
-        name: {
+        password: {
             isRequired: {
-                message: "Введите ваше имя"
+                message: "Пароль обязателен для заполнения"
+            },
+            isCapitalSymbol: {
+                message: "Пароль должен содержать хотя бы одну заглавную букву"
+            },
+            isContainDigit: {
+                message: "Пароль должен содержать хотя бы одно число"
+            },
+            min: {
+                message: "Пароль должен состаять минимум из 8 символов",
+                value: 8
             }
         }
     };
+
     useEffect(() => validate(), [data]);
+
     const handleChange = (target) => {
         setData((prevState) => ({
             ...prevState,
             [target.name]: target.value
         }));
     };
+
     const validate = () => {
-        const errors = validator(data, validatorConfog);
+        const errors = validator(data, validatorConfig);
         setErrors(errors);
         return Object.keys(errors).length === 0;
     };
+
     const isValid = Object.keys(errors).length === 0;
+
     return (
         <div className="container mt-5">
             <BackHistoryButton />
@@ -134,6 +157,14 @@ const EditUserPage = () => {
                                 value={data.email}
                                 onChange={handleChange}
                                 error={errors.email}
+                            />
+                            <TextField
+                                label="Пароль"
+                                type="password"
+                                name="password"
+                                value={data.password ? data.password : ""}
+                                onChange={handleChange}
+                                error={errors.password}
                             />
                             <SelectField
                                 label="Выбери свою профессию"

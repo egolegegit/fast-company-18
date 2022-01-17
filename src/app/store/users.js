@@ -169,9 +169,21 @@ export const getUserById = (userId) => (state) => {
 export const getUsersList = () => (state) => state.users.entities;
 
 export const updateUser = (payload) => async (dispatch) => {
+    const { email, password } = payload;
     dispatch(userUpdateRequested());
+
     try {
-        const { content } = await userService.update(payload);
+        const data = await authService.update({ email, password });
+
+        if (data.idToken && data.refreshToken) {
+            /* if we update the registration data, then we update the tokens */
+            localStorageService.setTokens(data);
+        }
+
+        const userData = { ...payload };
+        delete userData?.password;
+
+        const { content } = await userService.update(userData);
         dispatch(userUpdateSuccessed(content));
         history.push(`/users/${content._id}`);
     } catch (error) {
