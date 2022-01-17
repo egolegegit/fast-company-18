@@ -1,3 +1,9 @@
+# Дополнения функционала
+
+В /src/store/user.js - расширен метод updateUser, добавлен вызов сервиса authService.update для обновдение регистрационных данных
+пользователя (email, password).
+Соответственно модифицирован editUserPage.jsx и auth.service.js
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
